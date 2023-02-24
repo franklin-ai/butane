@@ -1,6 +1,6 @@
 [package]
 name = "butane_core"
-version = "0.5.2-alpha.1"
+version = "0.5.2-alpha.2"
 authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
 description = "Internals for Butane. Do not use this crate directly -- use the butane crate."
@@ -39,10 +39,7 @@ r2d2 = { version = "0.8", optional = true }
 rusqlite = { workspace = true, optional = true }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = "1.0"
-syn = { version = "1.0", default-features = false, features = [
-  "extra-traits",
-  "full",
-] }
+syn = { version = "1.0", features = [ "extra-traits", "full" ] }
 thiserror = "1.0"
 chrono = { version = "0.4", default-features = false, features = [
   "serde",
