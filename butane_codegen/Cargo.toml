@@ -1,6 +1,6 @@
 [package]
 name = "butane_codegen"
-version = "0.5.1-alpha.2"
+version = "0.5.1-alpha.3"
 authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
 description = "Macros for Butane. Do not use this crate directly -- use the butane crate."
@@ -13,7 +13,7 @@ datetime = []
 
 [dependencies]
 proc-macro2 = { version = "1.0", default-features = false }
-butane_core = { version = "0.5.2-alpha.1", registry = "franklin-ai-rosalind" }
+butane_core = { version = "0.5.2-alpha.2", registry = "franklin-ai-rosalind" }
 quote = { version = "1.0", default-features = false }
 syn = { version = "1.0", features = [ "extra-traits", "full" ] }
 uuid = { workspace = true, optional = true }
