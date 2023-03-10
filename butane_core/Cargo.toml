@@ -52,10 +52,4 @@ fake = { version = "2.5.1-alpha.1", registry = "franklin-ai-rosalind", features 
   "uuid",
 ] }
 rand = "0.8"
-utoipa = { version = "=3.0.4-alpha.1", registry = "franklin-ai-rosalind", features = [
-  "actix_extras",
-  "yaml",
-  "chrono",
-  "uuid",
-  "openapi_extensions",
-] }
+utoipa = { version = "=3.0.4-alpha.1", registry = "franklin-ai-rosalind" }
