@@ -187,3 +187,12 @@ impl<T: DataObject> Dummy<Faker> for Many<T> {
         Self::new()
     }
 }
+
+impl<'__s, T: DataObject + utoipa::ToSchema<'__s>> utoipa::ToSchema<'__s> for Many<T> {
+    fn schema() -> (
+        &'__s str,
+        utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    ) {
+        T::schema()
+    }
+}

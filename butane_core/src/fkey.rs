@@ -209,3 +209,12 @@ impl<T: DataObject> Dummy<Faker> for ForeignKey<T> {
         Self::new_raw()
     }
 }
+
+impl<'__s, T: DataObject + utoipa::ToSchema<'__s>> utoipa::ToSchema<'__s> for ForeignKey<T> {
+    fn schema() -> (
+        &'__s str,
+        utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    ) {
+        T::schema()
+    }
+}
