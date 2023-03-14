@@ -239,7 +239,7 @@ dependencies = [
  "fake",
  "geo-types",
  "log",
- "once_cell",
+ "once_cell_serde",
  "paste",
  "postgres",
  "proc-macro2 1.0.66",
@@ -295,7 +295,7 @@ dependencies = [
  "hex",
  "log",
  "native-tls",
- "once_cell",
+ "once_cell_serde",
  "paste",
  "pin-project",
  "postgres",
@@ -321,7 +321,7 @@ version = "0.6.1"
 dependencies = [
  "butane_core",
  "libc",
- "once_cell",
+ "once_cell_serde",
  "postgres",
  "uuid",
 ]
@@ -1068,6 +1068,15 @@ name = "once_cell"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
+
+[[package]]
+name = "once_cell_serde"
+version = "1.17.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0b4cd459a553fb0fc0bca19715e8d057bca8846e311a05c7b861d453c6e4205"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "openssl"
