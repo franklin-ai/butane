@@ -181,6 +181,7 @@ impl<T: DataObject> Default for Many<T> {
     }
 }
 
+#[cfg(feature = "fake")]
 impl<T: DataObject> Dummy<Faker> for Many<T> {
     fn dummy_with_rng<R: rand::Rng + ?Sized>(_: &Faker, _rng: &mut R) -> Self {
         Self::new()

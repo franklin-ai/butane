@@ -20,8 +20,8 @@ pub mod uuid;
 
 use db::{BackendRow, Column, ConnectionMethods};
 
-#[allow(unused_imports)]
-use fake::{Dummy, Fake};
+#[cfg(feature = "fake")]
+use fake::{Dummy, Faker};
 
 use custom::SqlTypeCustom;
 pub use query::Query;
@@ -35,7 +35,7 @@ pub type Result<T> = std::result::Result<T, crate::Error>;
 /// in the database yet. Butane automatically creates the field
 /// `state: ObjectState` on `#[model]` structs. When initializing the
 /// state field, use `ObjectState::default()`.
-#[derive(Clone, Default, Debug, Dummy)]
+#[derive(Clone, Default, Debug)]
 pub struct ObjectState {
     pub saved: bool,
 }
@@ -48,6 +48,14 @@ impl PartialEq<ObjectState> for ObjectState {
     }
 }
 impl Eq for ObjectState {}
+
+#[cfg(feature = "fake")]
+/// Fake data should always have `saved` set to `false`.
+impl Dummy<Faker> for ObjectState {
+    fn dummy_with_rng<R: rand::Rng + ?Sized>(_: &Faker, _rng: &mut R) -> Self {
+        Self::default()
+    }
+}
 
 /// A type which may be the result of a database query.
 ///
