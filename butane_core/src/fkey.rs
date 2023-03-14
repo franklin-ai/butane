@@ -1,7 +1,7 @@
 use crate::db::ConnectionMethods;
 use crate::*;
-use once_cell::unsync::OnceCell;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use once_cell::sync::OnceCell;
+use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::fmt::{Debug, Formatter};
 
@@ -23,8 +23,7 @@ use fake::{Dummy, Fake, Faker};
 ///   blog: ForeignKey<Blog>,
 ///   ...
 /// }
-///
-#[derive(Default)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct ForeignKey<T>
 where
     T: DataObject,
@@ -101,17 +100,6 @@ impl<T: DataObject> From<&T> for ForeignKey<T> {
         Self::from_pk(obj.pk().clone())
     }
 }
-impl<T: DataObject> Clone for ForeignKey<T> {
-    fn clone(&self) -> Self {
-        // Once specialization lands, it would be nice to clone val if
-        // it's cloneable. Then we wouldn't have to ensure the pk
-        self.ensure_valpk();
-        ForeignKey {
-            val: OnceCell::new(),
-            valpk: self.valpk.clone(),
-        }
-    }
-}
 
 impl<T> AsPrimaryKey<T> for ForeignKey<T>
 where
@@ -178,32 +166,8 @@ where
     }
 }
 
-impl<T> Serialize for ForeignKey<T>
-where
-    T: DataObject,
-    T::PKType: Serialize,
-{
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        self.pk().serialize(serializer)
-    }
-}
-
-impl<'de, T> Deserialize<'de> for ForeignKey<T>
-where
-    T: DataObject,
-    T::PKType: Deserialize<'de>,
-{
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        Ok(Self::from_pk(T::PKType::deserialize(deserializer)?))
-    }
-}
-
+#[cfg(feature = "fake")]
+/// Fake data support is currently limited to empty ForeignKey relationships.
 impl<T: DataObject> Dummy<Faker> for ForeignKey<T> {
     fn dummy_with_rng<R: rand::Rng + ?Sized>(_: &Faker, _rng: &mut R) -> Self {
         Self::new_raw()

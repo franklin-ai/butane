@@ -100,6 +100,7 @@ dependencies = [
  "chrono",
  "env_logger",
  "exec_time",
+ "fake",
  "geo-types",
  "libc",
  "log",
@@ -109,6 +110,7 @@ dependencies = [
  "proc-macro2 1.0.49",
  "quote 1.0.23",
  "r2d2",
+ "rand",
  "rusqlite",
  "serde",
  "serde_json",
@@ -153,7 +155,7 @@ dependencies = [
  "hex",
  "log",
  "native-tls",
- "once_cell",
+ "once_cell_serde",
  "pin-project",
  "postgres",
  "postgres-native-tls",
@@ -902,6 +904,15 @@ name = "once_cell"
 version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f61fba1741ea2b3d6a1e3178721804bb716a68a6aeba1149b5d52e3d464ea66"
+
+[[package]]
+name = "once_cell_serde"
+version = "1.17.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0b4cd459a553fb0fc0bca19715e8d057bca8846e311a05c7b861d453c6e4205"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "openssl"
@@ -1658,6 +1669,8 @@ checksum = "402bb19d8e03f1d1a7450e2bd613980869438e0666331be3e073089124aa1adc"
 [[package]]
 name = "utoipa"
 version = "3.0.4-alpha.2"
+source = "registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git"
+checksum = "a8a6f65aed773057cf6fd985eeec9e5c0399859eee06bd722ce2fa9012d79c77"
 dependencies = [
  "indexmap",
  "serde",
@@ -1668,6 +1681,8 @@ dependencies = [
 [[package]]
 name = "utoipa-gen"
 version = "3.0.4-alpha.2"
+source = "registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git"
+checksum = "ad87c4d7549bc5a3126ba5920150d658bf8d418db8c108a051c2a32bbe2226b2"
 dependencies = [
  "proc-macro-error",
  "proc-macro2 1.0.49",
