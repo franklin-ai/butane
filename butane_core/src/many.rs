@@ -1,7 +1,7 @@
 use crate::db::{Column, ConnectionMethods};
 use crate::query::{BoolExpr, Expr};
 use crate::{DataObject, Error, FieldType, Result, SqlType, SqlVal, ToSql};
-use once_cell::unsync::OnceCell;
+use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
@@ -31,7 +31,6 @@ where
     new_values: Vec<SqlVal>,
     #[serde(skip)]
     removed_values: Vec<SqlVal>,
-    #[serde(skip)]
     #[serde(default = "default_oc")]
     all_values: OnceCell<Vec<T>>,
 }
