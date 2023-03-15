@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::fmt::{Debug, Formatter};
 
-#[allow(unused_imports)]
+#[cfg(feature = "fake")]
 use fake::{Dummy, Fake, Faker};
 
 /// Used to implement a relationship between models.

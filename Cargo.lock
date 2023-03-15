@@ -92,10 +92,10 @@ checksum = "572f695136211188308f16ad2ca5c851a712c464060ae6974944458eb83880ba"
 
 [[package]]
 name = "butane"
-version = "0.5.2-alpha.6"
+version = "0.5.2-alpha.7"
 dependencies = [
- "butane_codegen",
- "butane_core",
+ "butane_codegen 0.5.1-alpha.7 (registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git)",
+ "butane_core 0.5.2-alpha.6 (registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git)",
  "cfg-if",
  "chrono",
  "env_logger",
@@ -119,7 +119,7 @@ dependencies = [
 
 [[package]]
 name = "butane_cli"
-version = "0.5.2-alpha.6"
+version = "0.5.2-alpha.7"
 dependencies = [
  "anyhow",
  "butane",
@@ -132,9 +132,22 @@ dependencies = [
 
 [[package]]
 name = "butane_codegen"
-version = "0.5.1-alpha.6"
+version = "0.5.1-alpha.7"
 dependencies = [
- "butane_core",
+ "butane_core 0.5.2-alpha.6",
+ "proc-macro2 1.0.49",
+ "quote 1.0.23",
+ "syn 1.0.107",
+ "uuid",
+]
+
+[[package]]
+name = "butane_codegen"
+version = "0.5.1-alpha.7"
+source = "registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git"
+checksum = "427b94cc88663eaa31b18205f934e877ee085f73075cffd03a4afecab552bd68"
+dependencies = [
+ "butane_core 0.5.2-alpha.6 (registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git)",
  "proc-macro2 1.0.49",
  "quote 1.0.23",
  "syn 1.0.107",
@@ -143,7 +156,41 @@ dependencies = [
 
 [[package]]
 name = "butane_core"
-version = "0.5.2-alpha.5"
+version = "0.5.2-alpha.6"
+dependencies = [
+ "bytes",
+ "cfg-if",
+ "chrono",
+ "fake",
+ "fallible-iterator",
+ "fallible-streaming-iterator",
+ "fs2",
+ "hex",
+ "log",
+ "native-tls",
+ "once_cell_serde",
+ "pin-project",
+ "postgres",
+ "postgres-native-tls",
+ "proc-macro2 1.0.49",
+ "quote 1.0.23",
+ "r2d2",
+ "rand",
+ "regex",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "syn 1.0.107",
+ "thiserror",
+ "utoipa",
+ "uuid",
+]
+
+[[package]]
+name = "butane_core"
+version = "0.5.2-alpha.6"
+source = "registry+https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git"
+checksum = "6c862fbb10ffacd9e89a9c342b1f0bab660b3d4b971baa103faee52c302afc7b"
 dependencies = [
  "bytes",
  "cfg-if",

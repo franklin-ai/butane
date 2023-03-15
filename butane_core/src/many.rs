@@ -5,7 +5,7 @@ use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
-#[allow(unused_imports)]
+#[cfg(feature = "fake")]
 use fake::{Dummy, Fake, Faker};
 
 fn default_oc<T>() -> OnceCell<Vec<T>> {

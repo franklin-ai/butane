@@ -1,6 +1,6 @@
 [package]
 name = "butane_codegen"
-version = "0.5.1-alpha.6"
+version = "0.5.1-alpha.7"
 authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
 description = "Macros for Butane. Do not use this crate directly -- use the butane crate."
