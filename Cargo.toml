@@ -14,9 +14,9 @@ members = [
 edition = "2021"
 
 [workspace.dependencies]
-butane = { path = "butane" }
-butane_core = { version = "0.5", path = "butane_core" }
-butane_test_helper = { version = "0.5", path = "butane_test_helper" }
+butane = { version = "0.5.2-alpha8", path = "butane", registry = "franklin-ai-rosalind" }
+butane_core = { version = "=0.5.2-alpha8", path = "butane_core", registry = "franklin-ai-rosalind" }
+butane_test_helper = { version = "=0.5.2-alpha8", path = "butane_test_helper", registry = "franklin-ai-rosalind" }
 cfg-if = "^1.0"
 chrono = { version = "0.4", default-features = false, features = [
   "serde",
