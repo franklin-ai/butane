@@ -1,6 +1,6 @@
 [package]
 name = "butane_cli"
-version = "0.5.2-alpha8"
+version = "0.5.2-alpha9"
 authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
 description = "The CLI for the Butane ORM"
