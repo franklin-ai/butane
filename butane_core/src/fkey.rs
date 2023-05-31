@@ -3,7 +3,6 @@ use crate::*;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
-use std::fmt::{Debug, Formatter};
 
 #[cfg(feature = "fake")]
 use fake::{Dummy, Faker};
@@ -23,7 +22,7 @@ use fake::{Dummy, Faker};
 ///   blog: ForeignKey<Blog>,
 ///   ...
 /// }
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ForeignKey<T>
 where
     T: DataObject,
@@ -111,11 +110,6 @@ where
 }
 
 impl<T: DataObject> Eq for ForeignKey<T> {}
-impl<T: DataObject> Debug for ForeignKey<T> {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        self.ensure_valpk().fmt(f)
-    }
-}
 
 impl<T> ToSql for ForeignKey<T>
 where
