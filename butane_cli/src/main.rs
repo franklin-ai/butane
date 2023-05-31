@@ -37,6 +37,16 @@ fn main() {
                         .help("Name to use for the migration"),
                 ),
         )
+        .subcommand(
+            clap::Command::new("detachmigration")
+                .about("Detach the top migration")
+                .arg(
+                    Arg::new("NAME")
+                        .required(true)
+                        .index(1)
+                        .help("Name to use for the migration"),
+                ),
+        )
         .subcommand(clap::Command::new("migrate").about("Apply migrations"))
         .subcommand(clap::Command::new("list").about("List migrations"))
 				.subcommand(clap::Command::new("collapse").about("Replace all migrations with a single migration representing the current model state.").arg(
@@ -87,6 +97,7 @@ fn main() {
     match args.subcommand() {
         Some(("init", sub_args)) => handle_error(init(Some(sub_args))),
         Some(("makemigration", sub_args)) => handle_error(make_migration(Some(sub_args))),
+        Some(("detachmigration", sub_args)) => handle_error(detach_migration(Some(sub_args))),
         Some(("migrate", _)) => handle_error(migrate()),
         Some(("rollback", sub_args)) => handle_error(rollback(Some(sub_args))),
         Some(("embed", _)) => handle_error(embed()),
@@ -118,6 +129,11 @@ fn init(args: Option<&ArgMatches>) -> Result<()> {
 fn make_migration(args: Option<&ArgMatches>) -> Result<()> {
     let name_arg = args.and_then(|a| a.get_one::<String>("NAME"));
     butane_cli::make_migration(name_arg)
+}
+
+fn detach_migration(args: Option<&ArgMatches>) -> Result<()> {
+    let name_arg = args.and_then(|a| a.get_one::<String>("NAME"));
+    butane_cli::detach_migration(name_arg)
 }
 
 fn rollback(args: Option<&ArgMatches>) -> Result<()> {
