@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use fake::Dummy;
 
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Blog {
     pub id: i64,
@@ -25,7 +25,7 @@ impl Blog {
 }
 
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Post {
     pub id: i64,
@@ -61,7 +61,7 @@ pub struct PostMetadata {
 }
 
 #[model]
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 #[table = "tags"]
 pub struct Tag {
@@ -77,9 +77,8 @@ impl Tag {
     }
 }
 
-pub fn create_tag(conn: &Connection, name: &str) -> Tag {
-    let mut tag = Tag::new(name);
-    tag.save(conn).unwrap();
+pub fn create_tag(name: &str) -> Tag {
+    let tag = Tag::new(name);
     tag
 }
 
@@ -93,8 +92,8 @@ pub fn setup_blog(conn: &Connection) {
     let mut mountains_blog = Blog::new(2, "Mountains");
     mountains_blog.save(conn).unwrap();
 
-    let tag_asia = create_tag(conn, "asia");
-    let tag_danger = create_tag(conn, "danger");
+    let tag_asia = create_tag("asia");
+    let tag_danger = create_tag("danger");
 
     let mut post = Post::new(
         1,
