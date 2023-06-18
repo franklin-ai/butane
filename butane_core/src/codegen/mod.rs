@@ -327,7 +327,6 @@ fn get_many_sql_type(field: &Field) -> Option<DeferredSqlType> {
 fn get_foreign_key_sql_type(field: &Field) -> Option<DeferredSqlType> {
     let option_sql_type = get_foreign_type_argument(&field.ty, "Option");
     if option_sql_type.is_some() {
-        eprintln!("{:?}", option_sql_type);
         let inner_ty: syn::Type = syn::TypePath {
             qself: None,
             path: option_sql_type.unwrap().clone(),
@@ -628,6 +627,7 @@ impl From<TokenStream2> for CompilerErrorMsg {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use syn::parse::Parser;
