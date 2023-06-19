@@ -325,11 +325,10 @@ fn get_many_sql_type(field: &Field) -> Option<DeferredSqlType> {
 }
 
 fn get_foreign_key_sql_type(field: &Field) -> Option<DeferredSqlType> {
-    let option_sql_type = get_foreign_type_argument(&field.ty, "Option");
-    if option_sql_type.is_some() {
+    if let Some(inner_type_path) = get_foreign_type_argument(&field.ty, "Option") {
         let inner_ty: syn::Type = syn::TypePath {
             qself: None,
-            path: option_sql_type.unwrap().clone(),
+            path: inner_type_path.clone(),
         }
         .into();
 

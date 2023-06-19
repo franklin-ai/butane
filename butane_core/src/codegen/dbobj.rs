@@ -57,8 +57,8 @@ pub fn impl_dbobject(ast_struct: &ItemStruct, config: &Config) -> TokenStream2 {
             #[cfg(feature = "auto-save-related")]
             if is_option(f) {
                 quote!(
-                    if self.#ident.is_some() {
-                        let rv = self.#ident.unwrap().as_ref().get();
+                    if let Some(link_obj) = self.#ident {
+                        let rv = link_obj.as_ref().get();
                         //eprintln!("Saving Option {:?} ?", rv);
                         match rv {
                             Ok(val) => {
