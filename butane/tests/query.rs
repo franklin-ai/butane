@@ -179,7 +179,6 @@ fn many_objects_with_tag_explicit(conn: Connection) {
 }
 testall!(many_objects_with_tag_explicit);
 
-//#[cfg(not(feature = "auto-save-related"))]
 fn by_timestamp(conn: Connection) {
     blog::setup_blog(&conn);
     let mut post = find!(Post, title == "Sir Charles", &conn).unwrap();
