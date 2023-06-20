@@ -125,6 +125,7 @@ fn can_add_to_many_before_save(conn: Connection) {
 }
 testall!(can_add_to_many_before_save);
 
+#[cfg(not(feature = "auto-save-related"))]
 fn cant_add_unsaved_to_many(_conn: Connection) {
     let unsaved_item = AutoItem {
         id: -1,
@@ -136,6 +137,7 @@ fn cant_add_unsaved_to_many(_conn: Connection) {
         .add(&unsaved_item)
         .expect_err("unexpectedly not error");
 }
+#[cfg(not(feature = "auto-save-related"))]
 testall!(cant_add_unsaved_to_many);
 
 fn can_add_to_many_with_custom_table_name(conn: Connection) {

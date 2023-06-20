@@ -77,8 +77,11 @@ impl Tag {
     }
 }
 
-pub fn create_tag(name: &str) -> Tag {
-    let tag = Tag::new(name);
+#[allow(unused_mut, unused_variables)]
+pub fn create_tag(conn: &Connection, name: &str) -> Tag {
+    let mut tag = Tag::new(name);
+    #[cfg(not(feature = "auto-save-related"))]
+    tag.save(conn).unwrap();
     tag
 }
 
@@ -87,9 +90,13 @@ pub fn create_tag(name: &str) -> Tag {
 /// 2. "Mountains"
 #[allow(dead_code)] // only used by some test files
 pub fn setup_blog(conn: &Connection) {
+    #[allow(unused_mut)]
     let mut cats_blog = Blog::new(1, "Cats");
+    #[cfg(not(feature = "auto-save-related"))]
     cats_blog.save(conn).unwrap();
+    #[allow(unused_mut)]
     let mut mountains_blog = Blog::new(2, "Mountains");
+    #[cfg(not(feature = "auto-save-related"))]
     mountains_blog.save(conn).unwrap();
 
     let tag_asia = create_tag("asia");

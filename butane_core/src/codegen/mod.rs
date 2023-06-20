@@ -324,8 +324,25 @@ fn get_many_sql_type(field: &Field) -> Option<DeferredSqlType> {
     get_foreign_sql_type(&field.ty, "Many")
 }
 
+fn get_foreign_key_sql_type(field: &Field) -> Option<DeferredSqlType> {
+    if let Some(inner_type_path) = get_foreign_type_argument(&field.ty, "Option") {
+        let inner_ty: syn::Type = syn::TypePath {
+            qself: None,
+            path: inner_type_path.clone(),
+        }
+        .into();
+
+        return get_foreign_sql_type(&inner_ty, "ForeignKey");
+    }
+    get_foreign_sql_type(&field.ty, "ForeignKey")
+}
+
 fn is_many_to_many(field: &Field) -> bool {
     get_many_sql_type(field).is_some()
+}
+
+fn is_foreign_key(field: &Field) -> bool {
+    get_foreign_key_sql_type(field).is_some()
 }
 
 fn is_option(field: &Field) -> bool {
@@ -606,5 +623,80 @@ impl CompilerErrorMsg {
 impl From<TokenStream2> for CompilerErrorMsg {
     fn from(ts: TokenStream2) -> Self {
         CompilerErrorMsg::new(ts)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use syn::parse::Parser;
+
+    #[test]
+    fn test_get_foreign_type_argument_option() {
+        let expected_type_path: syn::Path = syn::parse_quote!(butane::ForeignKey<Foo>);
+
+        let type_path: syn::TypePath = syn::parse_quote!(Option<butane::ForeignKey<Foo>>);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "Option");
+        assert!(rv.is_some());
+        assert_eq!(rv.unwrap(), &expected_type_path);
+
+        let type_path: syn::TypePath = syn::parse_quote!(butane::ForeignKey<Foo>);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "Option");
+        assert!(rv.is_none());
+    }
+
+    #[test]
+    fn test_get_foreign_type_argument_fky() {
+        let expected_type_path: syn::Path = syn::parse_quote!(Foo);
+
+        let type_path: syn::TypePath = syn::parse_quote!(butane::ForeignKey<Foo>);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "ForeignKey");
+        assert!(rv.is_some());
+        assert_eq!(rv.unwrap(), &expected_type_path);
+
+        let type_path: syn::TypePath = syn::parse_quote!(Foo);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "ForeignKey");
+        assert!(rv.is_none());
+    }
+
+    #[test]
+    fn test_get_foreign_type_argument_many() {
+        let expected_type_path: syn::Path = syn::parse_quote!(Foo);
+
+        let type_path: syn::TypePath = syn::parse_quote!(butane::Many<Foo>);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "Many");
+        assert!(rv.is_some());
+        assert_eq!(rv.unwrap(), &expected_type_path);
+
+        let type_path: syn::TypePath = syn::parse_quote!(Foo);
+        let typ = syn::Type::Path(type_path);
+        let rv = get_foreign_type_argument(&typ, "Many");
+        assert!(rv.is_none());
+    }
+
+    #[test]
+    fn test_is_foreign_key() {
+        let tokens = quote::quote! {
+           foos: butane::ForeignKey<Foo>
+        };
+        let field = syn::Field::parse_named.parse2(tokens).unwrap();
+        assert!(is_foreign_key(&field));
+
+        let tokens = quote::quote! {
+           foos: Option<butane::ForeignKey<Foo>>
+        };
+        let field = syn::Field::parse_named.parse2(tokens).unwrap();
+        assert!(is_foreign_key(&field));
+
+        let tokens = quote::quote! {
+           foos: Option<SomethingElse>
+        };
+        let field = syn::Field::parse_named.parse2(tokens).unwrap();
+        assert!(!is_foreign_key(&field));
     }
 }

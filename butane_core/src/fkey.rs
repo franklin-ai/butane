@@ -25,14 +25,14 @@ use fake::{Dummy, Faker};
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ForeignKey<T>
 where
-    T: DataObject,
+    T: DataObject + Clone,
 {
     // At least one must be initialized (enforced internally by this
     // type), but both need not be
     val: OnceCell<Box<T>>,
     valpk: OnceCell<SqlVal>,
 }
-impl<T: DataObject> ForeignKey<T> {
+impl<T: DataObject + Clone> ForeignKey<T> {
     pub fn from_pk(pk: T::PKType) -> Self {
         let ret = Self::new_raw();
         ret.valpk.set(pk.into_sql()).unwrap();
@@ -75,7 +75,7 @@ impl<T: DataObject> ForeignKey<T> {
         }
     }
 
-    fn ensure_valpk(&self) -> &SqlVal {
+    pub fn ensure_valpk(&self) -> &SqlVal {
         match self.valpk.get() {
             Some(sqlval) => return sqlval,
             None => match self.val.get() {
@@ -87,33 +87,35 @@ impl<T: DataObject> ForeignKey<T> {
     }
 }
 
-impl<T: DataObject> From<T> for ForeignKey<T> {
+impl<T: DataObject + Clone> From<T> for ForeignKey<T> {
     fn from(obj: T) -> Self {
         let ret = Self::new_raw();
         ret.val.set(Box::new(obj)).ok();
         ret
     }
 }
-impl<T: DataObject> From<&T> for ForeignKey<T> {
+impl<T: DataObject + Clone> From<&T> for ForeignKey<T> {
     fn from(obj: &T) -> Self {
-        Self::from_pk(obj.pk().clone())
+        let ret = Self::new_raw();
+        ret.val.set(Box::new(obj.clone())).ok();
+        ret
     }
 }
 
 impl<T> AsPrimaryKey<T> for ForeignKey<T>
 where
-    T: DataObject,
+    T: DataObject + Clone,
 {
     fn as_pk(&self) -> Cow<T::PKType> {
         Cow::Owned(self.pk())
     }
 }
 
-impl<T: DataObject> Eq for ForeignKey<T> {}
+impl<T: DataObject + Clone> Eq for ForeignKey<T> {}
 
 impl<T> ToSql for ForeignKey<T>
 where
-    T: DataObject,
+    T: DataObject + Clone,
 {
     fn to_sql(&self) -> SqlVal {
         self.ensure_valpk().clone()
@@ -128,14 +130,14 @@ where
 }
 impl<T> FieldType for ForeignKey<T>
 where
-    T: DataObject,
+    T: DataObject + Clone,
 {
     const SQLTYPE: SqlType = <T as DataObject>::PKType::SQLTYPE;
     type RefType = <<T as DataObject>::PKType as FieldType>::RefType;
 }
 impl<T> FromSql for ForeignKey<T>
 where
-    T: DataObject,
+    T: DataObject + Clone,
 {
     fn from_sql_ref(valref: SqlValRef) -> Result<Self> {
         Ok(ForeignKey {
@@ -147,7 +149,7 @@ where
 impl<T, U> PartialEq<U> for ForeignKey<T>
 where
     U: AsPrimaryKey<T>,
-    T: DataObject,
+    T: DataObject + Clone,
 {
     fn eq(&self, other: &U) -> bool {
         match self.val.get() {
@@ -162,7 +164,7 @@ where
 
 #[cfg(feature = "fake")]
 /// Fake data support is currently limited to empty ForeignKey relationships.
-impl<T: DataObject> Dummy<Faker> for ForeignKey<T> {
+impl<T: DataObject + Clone> Dummy<Faker> for ForeignKey<T> {
     fn dummy_with_rng<R: rand::Rng + ?Sized>(_: &Faker, _rng: &mut R) -> Self {
         Self::new_raw()
     }
