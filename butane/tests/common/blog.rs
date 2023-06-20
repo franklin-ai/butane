@@ -99,8 +99,8 @@ pub fn setup_blog(conn: &Connection) {
     #[cfg(not(feature = "auto-save-related"))]
     mountains_blog.save(conn).unwrap();
 
-    let tag_asia = create_tag("asia");
-    let tag_danger = create_tag("danger");
+    let tag_asia = create_tag(conn, "asia");
+    let tag_danger = create_tag(conn, "danger");
 
     let mut post = Post::new(
         1,

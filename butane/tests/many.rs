@@ -63,9 +63,9 @@ fn remove_one_from_many(conn: Connection) {
         "This post is about a fast cat.",
         &cats_blog,
     );
-    let tag_fast = create_tag("fast");
-    let tag_cat = create_tag("cat");
-    let tag_european = create_tag("european");
+    let tag_fast = create_tag(&conn, "fast");
+    let tag_cat = create_tag(&conn, "cat");
+    let tag_european = create_tag(&conn, "european");
 
     post.tags.add(&tag_fast).unwrap();
     post.tags.add(&tag_cat).unwrap();
@@ -90,10 +90,10 @@ fn remove_multiple_from_many(conn: Connection) {
         "This post is about a fast cat.",
         &cats_blog,
     );
-    let tag_fast = create_tag("fast");
-    let tag_cat = create_tag("cat");
-    let tag_european = create_tag("european");
-    let tag_striped = create_tag("striped");
+    let tag_fast = create_tag(&conn, "fast");
+    let tag_cat = create_tag(&conn, "cat");
+    let tag_european = create_tag(&conn, "european");
+    let tag_striped = create_tag(&conn, "striped");
 
     post.tags.add(&tag_fast).unwrap();
     post.tags.add(&tag_cat).unwrap();
@@ -115,8 +115,8 @@ fn can_add_to_many_before_save(conn: Connection) {
     // Verify that for an object with an auto-pk, we can add items to a Many field before we actually
     // save the original object (and thus get the actual pk);
     let mut obj = AutoPkWithMany::new();
-    obj.tags.add(&create_tag("blue")).unwrap();
-    obj.tags.add(&create_tag("red")).unwrap();
+    obj.tags.add(&create_tag(&conn, "blue")).unwrap();
+    obj.tags.add(&create_tag(&conn, "red")).unwrap();
     obj.save(&conn).unwrap();
 
     let obj = AutoPkWithMany::get(&conn, obj.id).unwrap();
@@ -142,8 +142,8 @@ testall!(cant_add_unsaved_to_many);
 
 fn can_add_to_many_with_custom_table_name(conn: Connection) {
     let mut obj = RenamedAutoPkWithMany::new();
-    obj.tags.add(&create_tag("blue")).unwrap();
-    obj.tags.add(&create_tag("red")).unwrap();
+    obj.tags.add(&create_tag(&conn, "blue")).unwrap();
+    obj.tags.add(&create_tag(&conn, "red")).unwrap();
     obj.save(&conn).unwrap();
 
     let obj = RenamedAutoPkWithMany::get(&conn, obj.id).unwrap();
