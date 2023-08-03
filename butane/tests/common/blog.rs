@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use fake::Dummy;
 
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Blog {
     pub id: i64,
@@ -25,7 +25,7 @@ impl Blog {
 }
 
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Post {
     pub id: i64,
@@ -61,7 +61,7 @@ pub struct PostMetadata {
 }
 
 #[model]
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 #[table = "tags"]
 pub struct Tag {
@@ -77,8 +77,10 @@ impl Tag {
     }
 }
 
+#[allow(unused_mut, unused_variables)]
 pub fn create_tag(conn: &Connection, name: &str) -> Tag {
     let mut tag = Tag::new(name);
+    #[cfg(not(feature = "auto-save-related"))]
     tag.save(conn).unwrap();
     tag
 }
