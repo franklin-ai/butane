@@ -1,0 +1,3 @@
+[registries]
+franklin-ai-rosalind = { index = "https://dl.cloudsmith.io/basic/franklin-ai/rosalind/cargo/index.git" }
+
