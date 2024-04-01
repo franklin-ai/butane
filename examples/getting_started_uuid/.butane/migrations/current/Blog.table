@@ -1,0 +1,29 @@
+{
+  "name": "Blog",
+  "columns": [
+    {
+      "name": "id",
+      "sqltype": {
+        "Deferred": "CT:BlogId"
+      },
+      "nullable": false,
+      "pk": true,
+      "auto": false,
+      "unique": false,
+      "default": null
+    },
+    {
+      "name": "name",
+      "sqltype": {
+        "KnownId": {
+          "Ty": "Text"
+        }
+      },
+      "nullable": false,
+      "pk": false,
+      "auto": false,
+      "unique": false,
+      "default": null
+    }
+  ]
+}

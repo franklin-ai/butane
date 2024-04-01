@@ -1,0 +1,49 @@
+[package]
+name = "getting_started_uuid"
+version = "0.1.0"
+authors = ["James Oakley <james@electronstudio.org>"]
+edition.workspace = true
+publish = false
+
+[[bin]]
+name = "show_posts_uuid"
+doc = false
+
+[[bin]]
+name = "write_post_uuid"
+doc = false
+
+[[bin]]
+name = "delete_post_uuid"
+doc = false
+
+[[bin]]
+name = "publish_post_uuid"
+doc = false
+
+[lib]
+doc = false
+
+[features]
+default = ["pg", "sqlite", "sqlite-bundled"]
+pg = ["butane/pg"]
+sqlite = ["butane/sqlite"]
+sqlite-bundled = ["butane/sqlite-bundled"]
+
+[dependencies]
+butane.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid = { workspace = true, features = ["serde", "v4"] }
+
+[dev-dependencies]
+butane_cli.workspace = true
+butane_core.workspace = true
+butane_test_helper.workspace = true
+cfg-if.workspace = true
+env_logger.workspace = true
+log.workspace = true
+paste.workspace = true
+
+[package.metadata.release]
+release = false
