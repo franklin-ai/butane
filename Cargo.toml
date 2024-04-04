@@ -29,7 +29,7 @@ env_logger = "0.11"
 fake = "2.6"
 log = "0.4"
 nonempty = "0.10"
-once_cell = "1.5.2"
+once_cell = { package = "once_cell_serde", version = "1.17", features = ["serde"] }
 paste = "1.0.11"
 postgres = "0.19"
 proc-macro2 = { version = "1.0", default-features = false }
