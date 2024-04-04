@@ -1,25 +1,9 @@
 [package]
 name = "getting_started_uuid"
 version = "0.1.0"
-authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
+license.workspace = true
 publish = false
-
-[[bin]]
-name = "show_posts_uuid"
-doc = false
-
-[[bin]]
-name = "write_post_uuid"
-doc = false
-
-[[bin]]
-name = "delete_post_uuid"
-doc = false
-
-[[bin]]
-name = "publish_post_uuid"
-doc = false
 
 [lib]
 doc = false

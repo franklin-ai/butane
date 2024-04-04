@@ -1,4 +1,4 @@
-//! Common helpers for the getting_started example CLI.
+//! Common helpers for the getting_started_uuid example CLI.
 
 #![deny(missing_docs)]
 

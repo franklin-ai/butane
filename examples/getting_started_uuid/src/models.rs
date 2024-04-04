@@ -1,4 +1,4 @@
-//! Models for the getting_started example.
+//! Models for the getting_started_uuid example.
 
 use butane::prelude::*;
 use butane::{model, FieldType, ForeignKey, Many, PrimaryKeyType};
