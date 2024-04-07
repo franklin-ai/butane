@@ -5,13 +5,13 @@ use butane_test_helper::*;
 
 use newtype::models::{Blog, Post, Tags};
 
-fn insert_data(connection: &Connection) {
+async fn insert_data(connection: &Connection) {
     if connection.backend_name() == "sqlite" {
         // https://github.com/Electron100/butane/issues/226
         return;
     }
     let mut cats_blog = Blog::new("Cats").unwrap();
-    cats_blog.save(connection).unwrap();
+    cats_blog.save(connection).await.unwrap();
 
     let mut post = Post::new(
         cats_blog,
@@ -24,22 +24,23 @@ fn insert_data(connection: &Connection) {
         "asia".to_string(),
         "danger".to_string(),
     ]));
-    post.save(connection).unwrap();
+    post.save(connection).await.unwrap();
 }
 
-fn migrate_and_rollback(mut connection: Connection) {
+async fn migrate_and_rollback(mut connection: Connection) {
     // Migrate forward.
     let base_dir = std::path::PathBuf::from(".butane");
     let migrations = butane_cli::get_migrations(&base_dir).unwrap();
-    let to_apply = migrations.unapplied_migrations(&connection).unwrap();
+    let to_apply = migrations.unapplied_migrations(&connection).await.unwrap();
     for migration in &to_apply {
         migration
             .apply(&mut connection)
+            .await
             .unwrap_or_else(|err| panic!("migration {} failed: {err}", migration.name()));
         eprintln!("Applied {}", migration.name());
     }
 
-    insert_data(&connection);
+    insert_data(&connection).await;
 
     // Rollback migrations.
     for migration in to_apply.iter().rev() {
@@ -47,13 +48,14 @@ fn migrate_and_rollback(mut connection: Connection) {
             // Postgres error db error: ERROR: cannot drop table blog because other objects depend on it
             // DETAIL: constraint post_blog_fkey on table post depends on table blog
             // HINT: Use DROP ... CASCADE to drop the dependent objects too.
-            let err = migration.downgrade(&mut connection).unwrap_err();
+            let err = migration.downgrade(&mut connection).await.unwrap_err();
             eprintln!("Rolled back {} failed: {err:?}", migration.name());
             return;
         }
 
         migration
             .downgrade(&mut connection)
+            .await
             .unwrap_or_else(|err| panic!("rollback of {} failed: {err}", migration.name()));
         eprintln!("Rolled back {}", migration.name());
     }
