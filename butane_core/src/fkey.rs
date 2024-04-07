@@ -112,13 +112,13 @@ impl<T: DataObject> From<&T> for ForeignKey<T> {
     }
 }
 */
-impl<T: DataObject> Clone for ForeignKey<T> {
+impl<T: DataObject + Clone> Clone for ForeignKey<T> {
     fn clone(&self) -> Self {
         // Once specialization lands, it would be nice to clone val if
         // it's clone-able. Then we wouldn't have to ensure the pk
         self.ensure_valpk();
         ForeignKey {
-            val: OnceCell::new(),
+            val: self.val.clone(),
             valpk: self.valpk.clone(),
         }
     }
