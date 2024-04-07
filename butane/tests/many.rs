@@ -78,7 +78,8 @@ async fn load_sorted_from_many(conn: Connection) {
     let post3 = Post::get(&conn, post.id).await.unwrap();
     let mut tag_iter = post3
         .tags
-        .load_ordered(&conn, OrderDirection::Descending).await
+        .load_ordered(&conn, OrderDirection::Descending)
+        .await
         .unwrap();
     assert_eq!(tag_iter.next().unwrap().tag, "fast");
     assert_eq!(tag_iter.next().unwrap().tag, "european");

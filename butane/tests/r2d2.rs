@@ -26,11 +26,7 @@ fn r2d2_sqlite() {
         assert_eq!(pool.state().idle_connections, 2);
         let mut conn_async = butane::db::adapt_connection(*conn1.deref()).unwrap();
         let backend = butane_core::db::get_backend("sqlite").unwrap();
-        setup_db(
-            backend,
-            &mut conn_async,
-            true,
-        );
+        setup_db(backend, &mut conn_async, true);
 
         let _conn2 = pool.get().unwrap();
         assert_eq!(pool.state().idle_connections, 1);
@@ -50,7 +46,11 @@ async fn r2d2_pq() {
         assert_eq!(pool.state().connections, 3);
         assert_eq!(pool.state().idle_connections, 2);
         let mut conn_async = butane::db::adapt_connection(*conn1.deref()).unwrap();
-        setup_db(Box::new(butane::db::pg::PgBackend::new()), &mut conn_async, true);
+        setup_db(
+            Box::new(butane::db::pg::PgBackend::new()),
+            &mut conn_async,
+            true,
+        );
 
         let _conn2 = pool.get().unwrap();
         assert_eq!(pool.state().idle_connections, 1);

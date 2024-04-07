@@ -162,12 +162,9 @@ async fn main() {
     };
 
     match &cli.command {
-        Commands::Init(args) => handle_error(init(
-            &base_dir,
-            &args.backend,
-            &args.connection,
-            args.connect,
-        ).await),
+        Commands::Init(args) => {
+            handle_error(init(&base_dir, &args.backend, &args.connection, args.connect).await)
+        }
         Commands::Backend { subcommand } => match subcommand {
             BackendCommands::Add { name } => handle_error(add_backend(&base_dir, name)),
             BackendCommands::Remove { name } => handle_error(remove_backend(&base_dir, name)),
@@ -181,7 +178,9 @@ async fn main() {
         Commands::Rollback { name } => handle_error(rollback(&base_dir, name.to_owned()).await),
         Commands::Embed => handle_error(embed(&base_dir)),
         Commands::List => handle_error(list_migrations(&base_dir).await),
-        Commands::Collapse { name } => handle_error(collapse_migrations(&base_dir, Some(name)).await),
+        Commands::Collapse { name } => {
+            handle_error(collapse_migrations(&base_dir, Some(name)).await)
+        }
         Commands::Clear { subcommand } => match subcommand {
             ClearCommands::Data => handle_error(clear_data(&base_dir).await),
         },

@@ -22,7 +22,6 @@ pub mod sqlval;
 #[cfg(feature = "uuid")]
 pub mod uuid;
 
-
 use db::{BackendRow, Column, ConnectionMethods};
 mod sync {
     #[allow(unused_imports)]
@@ -65,7 +64,7 @@ pub trait DataResult: Sized {
 pub mod internal {
     //! Internals called by Butane codegen. Semver exempt.
     pub use async_trait::async_trait;
-    
+
     use super::*;
 
     /// Methods implemented by Butane codegen and called by other
@@ -112,7 +111,10 @@ pub trait DataObject: DataResult<DBO = Self> + internal::DataObjectInternal {
 
     /// Find this object in the database based on primary key.
     /// Returns `Error::NoSuchObject` if the primary key does not exist.
-    async fn get(conn: &impl ConnectionMethods, id: impl Borrow<Self::PKType> + Send + Sync) -> Result<Self>
+    async fn get(
+        conn: &impl ConnectionMethods,
+        id: impl Borrow<Self::PKType> + Send + Sync,
+    ) -> Result<Self>
     where
         Self: Sized,
         Self::PKType: Sync,
@@ -121,7 +123,10 @@ pub trait DataObject: DataResult<DBO = Self> + internal::DataObjectInternal {
     }
     /// Find this object in the database based on primary key.
     /// Returns `None` if the primary key does not exist.
-    async fn try_get(conn: &impl ConnectionMethods, id: impl Borrow<Self::PKType> + Send + Sync) -> Result<Option<Self>>
+    async fn try_get(
+        conn: &impl ConnectionMethods,
+        id: impl Borrow<Self::PKType> + Send + Sync,
+    ) -> Result<Option<Self>>
     where
         Self: Sized,
     {
@@ -144,7 +149,9 @@ pub trait DataObject: DataResult<DBO = Self> + internal::DataObjectInternal {
         if Self::AUTO_PK && <Self as DataResult>::COLUMNS.len() == 1 {
             // Our only field is an AutoPk
             if !self.pk().is_valid() {
-                let pk = conn.insert_returning_pk(Self::TABLE, &[], &pkcol, &[]).await?;
+                let pk = conn
+                    .insert_returning_pk(Self::TABLE, &[], &pkcol, &[])
+                    .await?;
                 self.pk_mut().initialize(pk)?;
             }
         } else if Self::AUTO_PK {
@@ -163,20 +170,24 @@ pub trait DataObject: DataResult<DBO = Self> + internal::DataObjectInternal {
                     self.pk().to_sql_ref(),
                     Self::NON_AUTO_COLUMNS,
                     &self.values(false),
-                ).await?;
+                )
+                .await?;
             } else {
                 // invalid pk, do an insert
-                let pk = conn.insert_returning_pk(
-                    Self::TABLE,
-                    Self::NON_AUTO_COLUMNS,
-                    &pkcol,
-                    &self.values(true),
-                ).await?;
+                let pk = conn
+                    .insert_returning_pk(
+                        Self::TABLE,
+                        Self::NON_AUTO_COLUMNS,
+                        &pkcol,
+                        &self.values(true),
+                    )
+                    .await?;
                 self.pk_mut().initialize(pk)?;
             };
         } else {
             // No AutoPk to worry about, do an upsert
-            conn.insert_or_replace(Self::TABLE, Self::COLUMNS, &pkcol, &self.values(true)).await?;
+            conn.insert_or_replace(Self::TABLE, Self::COLUMNS, &pkcol, &self.values(true))
+                .await?;
         }
 
         self.save_many_to_many(conn).await?;
@@ -186,7 +197,8 @@ pub trait DataObject: DataResult<DBO = Self> + internal::DataObjectInternal {
 
     /// Delete the object from the database.
     async fn delete(&self, conn: &impl ConnectionMethods) -> Result<()> {
-        conn.delete(Self::TABLE, Self::PKCOL, self.pk().to_sql()).await
+        conn.delete(Self::TABLE, Self::PKCOL, self.pk().to_sql())
+            .await
     }
 }
 

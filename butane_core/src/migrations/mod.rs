@@ -144,7 +144,8 @@ where
     /// is not modified, nor is any other data removed. Use carefully.
     async fn clear_migrations(&mut self, conn: &impl ConnectionMethods) -> Result<()> {
         self.delete_migrations()?;
-        conn.delete_where(ButaneMigration::TABLE, query::BoolExpr::True).await?;
+        conn.delete_where(ButaneMigration::TABLE, query::BoolExpr::True)
+            .await?;
         Ok(())
     }
 

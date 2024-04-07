@@ -300,7 +300,8 @@ pub async fn rollback_to(base_dir: &Path, mut conn: Connection, to: &str) -> Res
     };
 
     let latest = ms
-        .last_applied_migration(&conn).await
+        .last_applied_migration(&conn)
+        .await
         .unwrap_or_else(|err| {
             eprintln!("Err: {err}");
             std::process::exit(1);
@@ -339,7 +340,10 @@ If you expected something to happen, try specifying the migration to rollback to
 }
 
 pub async fn rollback_latest(base_dir: &Path, mut conn: Connection) -> Result<()> {
-    match get_migrations(base_dir)?.last_applied_migration(&conn).await? {
+    match get_migrations(base_dir)?
+        .last_applied_migration(&conn)
+        .await?
+    {
         Some(m) => {
             println!("Rolling back migration {}", m.name());
             m.downgrade(&mut conn).await?;
@@ -587,7 +591,10 @@ pub async fn list_migrations(base_dir: &PathBuf) -> Result<()> {
 }
 
 /// Collapse multiple applied migrations into a new migration.
-pub async fn collapse_migrations(base_dir: &PathBuf, new_initial_name: Option<&String>) -> Result<()> {
+pub async fn collapse_migrations(
+    base_dir: &PathBuf,
+    new_initial_name: Option<&String>,
+) -> Result<()> {
     let name = match new_initial_name {
         Some(name) => format!("{}_{}", default_name(), name),
         None => default_name(),

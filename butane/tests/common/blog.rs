@@ -5,9 +5,10 @@ use butane::{db::Connection, ForeignKey, Many};
 use chrono::{naive::NaiveDateTime, offset::Utc};
 #[cfg(feature = "fake")]
 use fake::Dummy;
+use serde::{Deserialize, Serialize};
 
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Blog {
     pub id: i64,
@@ -24,7 +25,7 @@ impl Blog {
 
 #[cfg(feature = "datetime")]
 #[model]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 pub struct Post {
     pub id: i64,
@@ -84,7 +85,7 @@ pub struct PostMetadata {
 }
 
 #[model]
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 #[table = "tags"]
 pub struct Tag {

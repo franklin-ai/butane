@@ -3,11 +3,12 @@
 pub use r2d2::ManageConnection;
 
 use crate::connection_method_wrapper;
-use crate::db::{
-    Column, ConnectionSpec, RawQueryResult,
-};
 use crate::db::sync::{BackendConnection, Connection, ConnectionMethods};
-use crate::{query::{BoolExpr, Order}, Result, SqlVal, SqlValRef};
+use crate::db::{Column, ConnectionSpec, RawQueryResult};
+use crate::{
+    query::{BoolExpr, Order},
+    Result, SqlVal, SqlValRef,
+};
 
 /// R2D2 support for Butane. Implements [`r2d2::ManageConnection`].
 #[derive(Clone, Debug)]

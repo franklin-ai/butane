@@ -205,7 +205,7 @@ pub async fn setup_db(backend: Box<dyn Backend>, conn: &mut Connection, migrate:
     if let Some(mut mem_migrations) = setup_db_common(migrate) {
         assert!(
             mem_migrations
-            .create_migration(&nonempty::nonempty![backend], "init", None)
+                .create_migration(&nonempty::nonempty![backend], "init", None)
                 .expect("expected to create migration without error"),
             "expected to create migration"
         );

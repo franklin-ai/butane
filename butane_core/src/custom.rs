@@ -9,9 +9,9 @@
 
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "pg")]
 use tokio_postgres as postgres;
-use serde::{Deserialize, Serialize};
 
 /// For use with [SqlType::Custom](crate::SqlType)
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

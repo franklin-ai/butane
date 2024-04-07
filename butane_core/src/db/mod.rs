@@ -34,7 +34,9 @@ mod adapter;
 pub use adapter::BackendAdapter;
 
 mod connmethods;
-pub use connmethods::{BackendRow, BackendRows, Column, ConnectionMethods, MapDeref, QueryResult, RawQueryResult};
+pub use connmethods::{
+    BackendRow, BackendRows, Column, ConnectionMethods, MapDeref, QueryResult, RawQueryResult,
+};
 
 mod helper;
 mod macros;
@@ -51,7 +53,6 @@ pub use r2::ConnectionManager;
 
 // Macros are always exported at the root of the crate
 use crate::connection_method_wrapper;
-
 
 mod internal {
     use super::*;

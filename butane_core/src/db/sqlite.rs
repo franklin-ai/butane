@@ -12,7 +12,6 @@ use chrono::naive::NaiveDateTime;
 use fallible_streaming_iterator::FallibleStreamingIterator;
 use pin_project::pin_project;
 
-
 use super::sync::{
     Backend, BackendConnection, BackendTransaction, Connection, ConnectionMethods, Transaction,
 };
