@@ -105,11 +105,13 @@ impl<T: DataObject> From<T> for ForeignKey<T> {
         ret
     }
 }
+/*
 impl<T: DataObject> From<&T> for ForeignKey<T> {
     fn from(obj: &T) -> Self {
         Self::from_pk(obj.pk().clone())
     }
 }
+*/
 impl<T: DataObject> Clone for ForeignKey<T> {
     fn clone(&self) -> Self {
         // Once specialization lands, it would be nice to clone val if

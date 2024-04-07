@@ -14,7 +14,7 @@ fn insert_data(connection: &Connection) {
     cats_blog.save(connection).unwrap();
 
     let mut post = Post::new(
-        &cats_blog,
+        cats_blog,
         "The Tiger".to_string(),
         "The tiger is a cat which would very much like to eat you.".to_string(),
     );

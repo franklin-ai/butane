@@ -32,7 +32,7 @@ pub async fn create_blog(conn: &Connection, name: impl Into<String>) -> Blog {
 }
 
 /// Create a [Post].
-pub async fn create_post(conn: &Connection, blog: &Blog, title: String, body: String) -> Post {
+pub async fn create_post(conn: &Connection, blog: Blog, title: String, body: String) -> Post {
     let mut new_post = Post::new(blog, title, body);
     new_post.save(conn).await.unwrap();
     new_post

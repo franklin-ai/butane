@@ -21,7 +21,7 @@ async fn main() {
     let mut body = String::new();
     stdin().read_to_string(&mut body).unwrap();
 
-    let post = create_post(&conn, &blog, title, body).await;
+    let post = create_post(&conn, blog, title, body).await;
     println!(
         "\nSaved unpublished post {} with id {}",
         post.title, post.id

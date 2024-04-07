@@ -54,7 +54,7 @@ async fn load_sorted_from_many(conn: Connection) {
         1,
         "The Cheetah",
         "This post is about a fast cat.",
-        &cats_blog,
+        cats_blog,
     );
     let tag_fast = create_tag(&conn, "fast").await;
     let tag_cat = create_tag(&conn, "cat").await;
@@ -94,7 +94,7 @@ async fn remove_one_from_many(conn: Connection) {
         1,
         "The Cheetah",
         "This post is about a fast cat.",
-        &cats_blog,
+        cats_blog,
     );
     let tag_fast = create_tag(&conn, "fast").await;
     let tag_cat = create_tag(&conn, "cat").await;
@@ -121,7 +121,7 @@ async fn remove_multiple_from_many(conn: Connection) {
         1,
         "The Cheetah",
         "This post is about a fast cat.",
-        &cats_blog,
+        cats_blog,
     );
     let tag_fast = create_tag(&conn, "fast").await;
     let tag_cat = create_tag(&conn, "cat").await;
@@ -151,7 +151,7 @@ async fn delete_all_from_many(conn: Connection) {
         1,
         "The Cheetah",
         "This post is about a fast cat.",
-        &cats_blog,
+        cats_blog,
     );
     let tag_fast = create_tag(&conn, "fast").await;
     let tag_cat = create_tag(&conn, "cat").await;

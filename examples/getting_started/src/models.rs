@@ -46,7 +46,7 @@ pub struct Post {
 }
 impl Post {
     /// Create a new Post.
-    pub fn new(blog: &Blog, title: String, body: String) -> Self {
+    pub fn new(blog: Blog, title: String, body: String) -> Self {
         Post {
             id: AutoPk::uninitialized(),
             title,
