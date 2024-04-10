@@ -200,20 +200,11 @@ where
         let mut serde_state = Serializer::serialize_struct(serializer, "ForeignKey", 2)?;
         let val = self.val.get();
         if let Some(val) = val {
-            serde::ser::SerializeStruct::serialize_field(
-                &mut serde_state,
-                "val",
-                val,
-            )?;
+            serde::ser::SerializeStruct::serialize_field(&mut serde_state, "val", val)?;
         }
         let valpk = self.valpk.get();
-        if let Some(valpk) = valpk {
-            serde::ser::SerializeStruct::serialize_field(
-                &mut serde_state,
-                "valpk",
-                valpk,
-            )?;
-        }
+        serde::ser::SerializeStruct::serialize_field(&mut serde_state, "valpk", &valpk)?;
+
         serde::ser::SerializeStruct::end(serde_state)
     }
 }
@@ -373,7 +364,7 @@ where
                         val: OnceCell::from(Box::new(field_0)),
                         valpk: field_1.into(),
                     }),
-                    _ => Ok(ForeignKey::new_raw())
+                    _ => Ok(ForeignKey::new_raw()),
                 }
             }
         }

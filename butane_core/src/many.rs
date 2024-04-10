@@ -239,7 +239,12 @@ where
         )?;
         let default = &Vec::<T>::new();
         let val = self.all_values.get().unwrap_or(default);
-        serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
+        if val.is_empty() {
+            let val: Option<Vec<T>> = None;
+            serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
+        } else {
+            serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
+        }
         serde::ser::SerializeStruct::end(serde_state)
     }
 }
@@ -432,8 +437,11 @@ where
                                     "all_values",
                                 ));
                             }
-                            many_field_3 =
-                                Some(serde::de::MapAccess::next_value::<Vec<T>>(&mut map)?);
+                            if let Ok(all_values) =
+                                serde::de::MapAccess::next_value::<Vec<T>>(&mut map)
+                            {
+                                many_field_3 = Some(all_values);
+                            }
                         }
                         _ => {
                             let _ = serde::de::MapAccess::next_value::<serde::de::IgnoredAny>(
@@ -462,7 +470,7 @@ where
                             many_field_3.into()
                         }
                     }
-                    None => panic!(), // serde::__private::de::missing_field("all_values")?,
+                    None => OnceCell::new(),
                 };
                 Ok(Many {
                     item_table: many_field_0,
