@@ -4,12 +4,16 @@ use std::borrow::Cow;
 
 #[cfg(feature = "fake")]
 use fake::{Dummy, Faker};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use tokio::sync::OnceCell;
+use serde::{Deserialize, Serialize};
 
 use crate::db::{Column, ConnectionMethods};
+use crate::oncecell_serde::ButaneOnceCell as OnceCell;
 use crate::query::{BoolExpr, Expr, OrderDirection, Query};
 use crate::{DataObject, Error, FieldType, PrimaryKeyType, Result, SqlType, SqlVal, ToSql};
+
+fn default_oc<T>() -> OnceCell<Vec<T>> {
+    OnceCell::default()
+}
 
 /// Used to implement a many-to-many relationship between models.
 ///
@@ -18,7 +22,7 @@ use crate::{DataObject, Error, FieldType, PrimaryKeyType, Result, SqlType, SqlVa
 /// U::PKType. Table name is T_foo_Many where foo is the name of
 /// the Many field
 //
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Many<T>
 where
     T: DataObject,
@@ -26,8 +30,11 @@ where
     item_table: Cow<'static, str>,
     owner: Option<SqlVal>,
     owner_type: SqlType,
+    #[serde(skip)]
     new_values: Vec<SqlVal>,
+    #[serde(skip)]
     removed_values: Vec<SqlVal>,
+    #[serde(default = "default_oc")]
     all_values: OnceCell<Vec<T>>,
 }
 impl<T> Many<T>
@@ -213,309 +220,6 @@ where
             Column::new("owner", self.owner_type.clone()),
             Column::new("has", <T::PKType as FieldType>::SQLTYPE),
         ]
-    }
-}
-
-impl<T> Serialize for Many<T>
-where
-    T: DataObject + Serialize + std::fmt::Debug,
-{
-    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut serde_state =
-            Serializer::serialize_struct(serializer, "Many", false as usize + 1 + 1 + 1)?;
-        serde::ser::SerializeStruct::serialize_field(
-            &mut serde_state,
-            "item_table",
-            &self.item_table,
-        )?;
-        serde::ser::SerializeStruct::serialize_field(&mut serde_state, "owner", &self.owner)?;
-        serde::ser::SerializeStruct::serialize_field(
-            &mut serde_state,
-            "owner_type",
-            &self.owner_type,
-        )?;
-        let default = &Vec::<T>::new();
-        let x = self.all_values.get();
-        eprintln!("x: {x:?}");
-        /*if .is_err() {
-            let err = self.all_values.get();
-            eprintln!("serialize err: {err:?}");
-        }*/
-        let val = self.all_values.get().unwrap_or(default);
-        if val.is_empty() {
-            let val: Option<Vec<T>> = None;
-            eprintln!("storing many all_values is {val:?}");
-            serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
-        } else {
-            //eprintln!("storing many all_values is Some");
-            serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
-        }
-        serde::ser::SerializeStruct::end(serde_state)
-    }
-}
-
-impl<'de, T> Deserialize<'de> for Many<T>
-where
-    T: DataObject + Deserialize<'de> + std::fmt::Debug,
-{
-    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[allow(non_camel_case_types)]
-        #[doc(hidden)]
-        enum ManyField {
-            many_field_0, // item_table
-            many_field_1, // owner
-            many_field_2, // owner_type
-            many_field_3, // all_values
-            ignore,
-        }
-        #[doc(hidden)]
-        struct FieldVisitor;
-        impl<'de> serde::de::Visitor<'de> for FieldVisitor {
-            type Value = ManyField;
-            fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
-                core::fmt::Formatter::write_str(formatter, "field identifier")
-            }
-            fn visit_u64<E>(self, value: u64) -> core::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                eprintln!("visit_u64: {value:?}");
-                match value {
-                    0u64 => Ok(ManyField::many_field_0),
-                    1u64 => Ok(ManyField::many_field_1),
-                    2u64 => Ok(ManyField::many_field_2),
-                    3u64 => Ok(ManyField::many_field_3),
-                    _ => Ok(ManyField::ignore),
-                }
-            }
-            fn visit_str<E>(self, value: &str) -> core::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                eprintln!("visit_str: {value:?}");
-                match value {
-                    "item_table" => Ok(ManyField::many_field_0),
-                    "owner" => Ok(ManyField::many_field_1),
-                    "owner_type" => Ok(ManyField::many_field_2),
-                    "all_values" => Ok(ManyField::many_field_3),
-                    _ => Ok(ManyField::ignore),
-                }
-            }
-            fn visit_bytes<E>(self, value: &[u8]) -> core::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                eprintln!("visit_bytes: {value:?}");
-                match value {
-                    b"item_table" => Ok(ManyField::many_field_0),
-                    b"owner" => Ok(ManyField::many_field_1),
-                    b"owner_type" => Ok(ManyField::many_field_2),
-                    b"all_values" => Ok(ManyField::many_field_3),
-                    _ => Ok(ManyField::ignore),
-                }
-            }
-        }
-        impl<'de> Deserialize<'de> for ManyField {
-            #[inline]
-            fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
-            where
-                D: Deserializer<'de>,
-            {
-                Deserializer::deserialize_identifier(deserializer, FieldVisitor)
-            }
-        }
-        #[doc(hidden)]
-        struct Visitor<'de, T>
-        where
-            T: DataObject,
-        {
-            marker: std::marker::PhantomData<Many<T>>,
-            lifetime: std::marker::PhantomData<&'de ()>,
-        }
-        impl<'de, T> serde::de::Visitor<'de> for Visitor<'de, T>
-        where
-            T: DataObject + Deserialize<'de> + std::fmt::Debug,
-        {
-            type Value = Many<T>;
-            fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
-                core::fmt::Formatter::write_str(formatter, "struct Many")
-            }
-            // Unused?
-            #[inline]
-            fn visit_seq<A>(self, mut seq: A) -> core::result::Result<Self::Value, A::Error>
-            where
-                A: serde::de::SeqAccess<'de>,
-            {
-                eprintln!("visit_seq");
-                let many_field_0 =
-                    match serde::de::SeqAccess::next_element::<Cow<'static, str>>(&mut seq)? {
-                        Some(value) => value,
-                        None => {
-                            return Err(serde::de::Error::invalid_length(
-                                0usize,
-                                &"struct Many with 4 elements",
-                            ));
-                        }
-                    };
-                let many_field_1 =
-                    match serde::de::SeqAccess::next_element::<Option<SqlVal>>(&mut seq)? {
-                        Some(value) => value,
-                        None => {
-                            return Err(serde::de::Error::invalid_length(
-                                1usize,
-                                &"struct Many with 4 elements",
-                            ));
-                        }
-                    };
-                let many_field_2 = match serde::de::SeqAccess::next_element::<SqlType>(&mut seq)? {
-                    Some(value) => value,
-                    None => {
-                        return Err(serde::de::Error::invalid_length(
-                            2usize,
-                            &"struct Many with 4 elements",
-                        ));
-                    }
-                };
-                let many_field_3 = match serde::de::SeqAccess::next_element::<Vec<T>>(&mut seq)? {
-                    Some(value) => value,
-                    None => {
-                        eprintln!("visit_seq many_field_3: None");
-                        return Err(serde::de::Error::invalid_length(
-                            2usize,
-                            &"struct Many with 4 elements",
-                        ));
-                    }
-                };
-                let many_field_4 = Default::default();
-                let many_field_5 = Default::default();
-                Ok(Many {
-                    item_table: many_field_0,
-                    owner: many_field_1,
-                    owner_type: many_field_2,
-                    new_values: many_field_4,
-                    removed_values: many_field_5,
-                    all_values: many_field_3.into(),
-                })
-            }
-
-            #[inline]
-            fn visit_map<A>(self, mut map: A) -> core::result::Result<Self::Value, A::Error>
-            where
-                A: serde::de::MapAccess<'de>,
-            {
-                let mut many_field_0: Option<Cow<'static, str>> = None;
-                let mut many_field_1: Option<Option<SqlVal>> = None;
-                let mut many_field_2: Option<SqlType> = None;
-                let mut many_field_3: Option<Vec<T>> = None;
-                while let Some(key) = serde::de::MapAccess::next_key::<ManyField>(&mut map)? {
-                    
-                    match key {
-                        ManyField::many_field_0 => {
-                            if Option::is_some(&many_field_0) {
-                                return Err(<A::Error as serde::de::Error>::duplicate_field(
-                                    "item_table",
-                                ));
-                            }
-                            many_field_0 = Some(serde::de::MapAccess::next_value::<
-                                Cow<'static, str>,
-                            >(&mut map)?);
-                        }
-                        ManyField::many_field_1 => {
-                            if Option::is_some(&many_field_1) {
-                                return Err(<A::Error as serde::de::Error>::duplicate_field(
-                                    "owner",
-                                ));
-                            }
-                            many_field_1 = Some(
-                                serde::de::MapAccess::next_value::<Option<SqlVal>>(&mut map)?,
-                            );
-                        }
-                        ManyField::many_field_2 => {
-                            if Option::is_some(&many_field_2) {
-                                return Err(<A::Error as serde::de::Error>::duplicate_field(
-                                    "owner_type",
-                                ));
-                            }
-                            many_field_2 =
-                                Some(serde::de::MapAccess::next_value::<SqlType>(&mut map)?);
-                        }
-                        ManyField::many_field_3 => {
-                            //eprintln!("visit_map many_field_3 : {many_field_3:?}");
-                            if Option::is_some(&many_field_3) {
-                                return Err(<A::Error as serde::de::Error>::duplicate_field(
-                                    "all_values",
-                                ));
-                            }
-
-                            let foo = serde::de::MapAccess::next_value::<Vec<T>>(&mut map);
-                            eprintln!("foo: {foo:?}");
-                            if let Ok(all_values) =
-                                foo
-                            {
-                                eprintln!("many_field_3 = Some");
-                                many_field_3 = Some(all_values);
-                            }
-                            else {
-                                eprintln!("many_field_3 = None");
-                            }
-                        }
-                        _ => {
-                            let _ = serde::de::MapAccess::next_value::<serde::de::IgnoredAny>(
-                                &mut map,
-                            )?;
-                        }
-                    }
-                }
-                let many_field_0 = match many_field_0 {
-                    Some(many_field_0) => many_field_0,
-                    None => serde::__private::de::missing_field("item_table")?,
-                };
-                let many_field_1 = match many_field_1 {
-                    Some(many_field_1) => many_field_1,
-                    None => serde::__private::de::missing_field("owner")?,
-                };
-                let many_field_2 = match many_field_2 {
-                    Some(many_field_2) => many_field_2,
-                    None => serde::__private::de::missing_field("owner_type")?,
-                };
-                let many_field_3 = match many_field_3 {
-                    Some(many_field_3) => {
-                        if many_field_3.is_empty() {
-                            OnceCell::new()
-                        } else {
-                            many_field_3.into()
-                        }
-                    }
-                    None => OnceCell::new(),
-                };
-                Ok(Many {
-                    item_table: many_field_0,
-                    owner: many_field_1,
-                    owner_type: many_field_2,
-                    new_values: Default::default(),
-                    removed_values: Default::default(),
-                    all_values: many_field_3,
-                })
-            }
-        }
-        #[doc(hidden)]
-        const FIELDS: &'static [&'static str] =
-            &["item_table", "owner", "owner_type", "all_values"];
-        Deserializer::deserialize_struct(
-            deserializer,
-            "Many",
-            FIELDS,
-            Visitor {
-                marker: std::marker::PhantomData::<Many<T>>,
-                lifetime: std::marker::PhantomData,
-            },
-        )
     }
 }
 
