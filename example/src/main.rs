@@ -26,7 +26,7 @@ struct Post {
     byline: Option<String>,
 }
 impl Post {
-    fn new(blog: &Blog, title: String, body: String) -> Self {
+    fn new(blog: Blog, title: String, body: String) -> Self {
         Post {
             id: AutoPk::default(),
             title,
@@ -60,7 +60,7 @@ async fn query() -> Result<()> {
     };
     tag.save(&conn).await.unwrap();
 
-    let mut post = Post::new(&blog, "Grizzly".into(), "lorem ipsum".into());
+    let mut post = Post::new(blog, "Grizzly".into(), "lorem ipsum".into());
     post.published = true;
     post.tags.add(&tag)?;
     post.save(&conn).await.unwrap();
