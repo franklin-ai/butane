@@ -9,6 +9,7 @@ use butane::{
 use chrono::{naive::NaiveDateTime, offset::Utc};
 #[cfg(feature = "fake")]
 use fake::Dummy;
+use serde::{Deserialize, Serialize};
 
 #[model]
 #[derive(Debug, Eq, PartialEq)]
@@ -89,7 +90,7 @@ pub struct PostMetadata {
 }
 
 #[model]
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "fake", derive(Dummy))]
 #[table = "tags"]
 pub struct Tag {

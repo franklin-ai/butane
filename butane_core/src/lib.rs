@@ -18,6 +18,8 @@ pub mod migrations;
 pub mod query;
 pub mod sqlval;
 
+pub(crate) mod oncelock_serde;
+
 #[cfg(feature = "uuid")]
 pub mod uuid;
 

@@ -2,11 +2,10 @@
 #![deny(missing_docs)]
 use std::borrow::Cow;
 use std::fmt::Debug;
-use std::sync::OnceLock;
 
 #[cfg(feature = "fake")]
 use fake::{Dummy, Faker};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
 use crate::util::get_or_init_once_lock;
 #[cfg(feature = "async")]
@@ -15,6 +14,8 @@ use crate::{
     AsPrimaryKey, ConnectionMethods, DataObject, Error, FieldType, FromSql, Result, SqlType,
     SqlVal, SqlValRef, ToSql,
 };
+
+use crate::oncelock_serde::ButaneOnceLock as OnceLock;
 
 /// Used to implement a relationship between models.
 ///
@@ -33,7 +34,7 @@ use crate::{
 ///   blog: ForeignKey<Blog>,
 ///   ...
 /// }
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ForeignKey<T>
 where
     T: DataObject,
@@ -172,7 +173,7 @@ where
     }
     fn into_sql(self) -> SqlVal {
         self.ensure_valpk();
-        self.valpk.into_inner().unwrap()
+        self.valpk.0.into_inner().unwrap()
     }
 }
 impl<T> FieldType for ForeignKey<T>
@@ -206,32 +207,6 @@ where
                 None => panic!("Invalid foreign key state"),
             },
         }
-    }
-}
-
-impl<T> Serialize for ForeignKey<T>
-where
-    T: DataObject,
-    T::PKType: Serialize,
-{
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        self.pk().serialize(serializer)
-    }
-}
-
-impl<'de, T> Deserialize<'de> for ForeignKey<T>
-where
-    T: DataObject,
-    T::PKType: Deserialize<'de>,
-{
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        Ok(Self::from_pk(T::PKType::deserialize(deserializer)?))
     }
 }
 
