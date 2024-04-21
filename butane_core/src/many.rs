@@ -218,7 +218,7 @@ where
 
 impl<T> Serialize for Many<T>
 where
-    T: DataObject + Serialize,
+    T: DataObject + Serialize + std::fmt::Debug,
 {
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -238,11 +238,19 @@ where
             &self.owner_type,
         )?;
         let default = &Vec::<T>::new();
+        let x = self.all_values.get();
+        eprintln!("x: {x:?}");
+        /*if .is_err() {
+            let err = self.all_values.get();
+            eprintln!("serialize err: {err:?}");
+        }*/
         let val = self.all_values.get().unwrap_or(default);
         if val.is_empty() {
             let val: Option<Vec<T>> = None;
+            eprintln!("storing many all_values is {val:?}");
             serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
         } else {
+            //eprintln!("storing many all_values is Some");
             serde::ser::SerializeStruct::serialize_field(&mut serde_state, "all_values", &val)?;
         }
         serde::ser::SerializeStruct::end(serde_state)
@@ -251,7 +259,7 @@ where
 
 impl<'de, T> Deserialize<'de> for Many<T>
 where
-    T: DataObject + Deserialize<'de>,
+    T: DataObject + Deserialize<'de> + std::fmt::Debug,
 {
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
@@ -260,10 +268,10 @@ where
         #[allow(non_camel_case_types)]
         #[doc(hidden)]
         enum ManyField {
-            many_field_0,
-            many_field_1,
-            many_field_2,
-            many_field_3,
+            many_field_0, // item_table
+            many_field_1, // owner
+            many_field_2, // owner_type
+            many_field_3, // all_values
             ignore,
         }
         #[doc(hidden)]
@@ -277,6 +285,7 @@ where
             where
                 E: serde::de::Error,
             {
+                eprintln!("visit_u64: {value:?}");
                 match value {
                     0u64 => Ok(ManyField::many_field_0),
                     1u64 => Ok(ManyField::many_field_1),
@@ -289,6 +298,7 @@ where
             where
                 E: serde::de::Error,
             {
+                eprintln!("visit_str: {value:?}");
                 match value {
                     "item_table" => Ok(ManyField::many_field_0),
                     "owner" => Ok(ManyField::many_field_1),
@@ -301,6 +311,7 @@ where
             where
                 E: serde::de::Error,
             {
+                eprintln!("visit_bytes: {value:?}");
                 match value {
                     b"item_table" => Ok(ManyField::many_field_0),
                     b"owner" => Ok(ManyField::many_field_1),
@@ -329,7 +340,7 @@ where
         }
         impl<'de, T> serde::de::Visitor<'de> for Visitor<'de, T>
         where
-            T: DataObject + Deserialize<'de>,
+            T: DataObject + Deserialize<'de> + std::fmt::Debug,
         {
             type Value = Many<T>;
             fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -341,6 +352,7 @@ where
             where
                 A: serde::de::SeqAccess<'de>,
             {
+                eprintln!("visit_seq");
                 let many_field_0 =
                     match serde::de::SeqAccess::next_element::<Cow<'static, str>>(&mut seq)? {
                         Some(value) => value,
@@ -373,6 +385,7 @@ where
                 let many_field_3 = match serde::de::SeqAccess::next_element::<Vec<T>>(&mut seq)? {
                     Some(value) => value,
                     None => {
+                        eprintln!("visit_seq many_field_3: None");
                         return Err(serde::de::Error::invalid_length(
                             2usize,
                             &"struct Many with 4 elements",
@@ -401,6 +414,7 @@ where
                 let mut many_field_2: Option<SqlType> = None;
                 let mut many_field_3: Option<Vec<T>> = None;
                 while let Some(key) = serde::de::MapAccess::next_key::<ManyField>(&mut map)? {
+                    
                     match key {
                         ManyField::many_field_0 => {
                             if Option::is_some(&many_field_0) {
@@ -432,15 +446,23 @@ where
                                 Some(serde::de::MapAccess::next_value::<SqlType>(&mut map)?);
                         }
                         ManyField::many_field_3 => {
+                            //eprintln!("visit_map many_field_3 : {many_field_3:?}");
                             if Option::is_some(&many_field_3) {
                                 return Err(<A::Error as serde::de::Error>::duplicate_field(
                                     "all_values",
                                 ));
                             }
+
+                            let foo = serde::de::MapAccess::next_value::<Vec<T>>(&mut map);
+                            eprintln!("foo: {foo:?}");
                             if let Ok(all_values) =
-                                serde::de::MapAccess::next_value::<Vec<T>>(&mut map)
+                                foo
                             {
+                                eprintln!("many_field_3 = Some");
                                 many_field_3 = Some(all_values);
+                            }
+                            else {
+                                eprintln!("many_field_3 = None");
                             }
                         }
                         _ => {

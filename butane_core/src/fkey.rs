@@ -287,7 +287,7 @@ where
             fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
                 core::fmt::Formatter::write_str(formatter, "struct ForeignKey")
             }
-            /*
+
             #[inline]
             fn visit_seq<A>(self, mut seq: A) -> core::result::Result<Self::Value, A::Error>
             where
@@ -302,7 +302,7 @@ where
                         ));
                     }
                 };
-                let field_1 = match serde::de::SeqAccess::next_element::<Option<SqlVal>>(&mut seq)?
+                let field_1 = match serde::de::SeqAccess::next_element::<SqlVal>(&mut seq)?
                 {
                     Some(value) => value,
                     None => {
@@ -313,11 +313,10 @@ where
                     }
                 };
                 Ok(ForeignKey {
-                    val: field_0.into(),
+                    val: Box::new(field_0).into(),
                     valpk: field_1.into(),
                 })
             }
-            */
 
             #[inline]
             fn visit_map<A>(self, mut map: A) -> core::result::Result<Self::Value, A::Error>
