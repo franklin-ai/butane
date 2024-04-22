@@ -260,7 +260,7 @@ checksum = "7ff69b9dd49fd426c69a0db9fc04dd934cdb6645ff000864d98f7e2af8830eaa"
 
 [[package]]
 name = "butane"
-version = "0.6.1"
+version = "0.6.2-alpha7"
 dependencies = [
  "async-trait",
  "butane_codegen",
@@ -291,7 +291,7 @@ dependencies = [
 
 [[package]]
 name = "butane_cli"
-version = "0.6.1"
+version = "0.6.2-alpha7"
 dependencies = [
  "anyhow",
  "butane",
@@ -310,7 +310,7 @@ dependencies = [
 
 [[package]]
 name = "butane_codegen"
-version = "0.6.1"
+version = "0.6.2-alpha7"
 dependencies = [
  "butane_core",
  "proc-macro2 1.0.79",
@@ -321,7 +321,7 @@ dependencies = [
 
 [[package]]
 name = "butane_core"
-version = "0.6.1"
+version = "0.6.2-alpha7"
 dependencies = [
  "assert_matches",
  "async-trait",
@@ -366,7 +366,7 @@ dependencies = [
 
 [[package]]
 name = "butane_test_helper"
-version = "0.6.1"
+version = "0.6.2-alpha7"
 dependencies = [
  "block-id",
  "butane_core",
