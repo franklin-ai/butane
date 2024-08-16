@@ -17,7 +17,7 @@ sqlite-bundled = ["butane/sqlite-bundled"]
 [dependencies]
 butane.workspace = true
 fake = { workspace = true, features = ["chrono", "derive", "uuid"] }
-garde = { version = "*", features = ["derive"] }
+garde = { version = "0.20", features = ["derive"] }
 serde.workspace = true
 serde_json.workspace = true
 uuid = { workspace = true, features = ["serde", "v4"] }

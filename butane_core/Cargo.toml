@@ -28,7 +28,7 @@ cfg-if = { workspace = true }
 chrono = { optional = true, workspace = true }
 # TODO make adapter optional
 crossbeam-channel = { workspace = true }
-derive_more = "*"
+derive_more = { version = "1.0", features = ["full"] }
 dyn-clone = { version = "1.0" }
 fake = { workspace = true, optional = true }
 fallible-iterator = "0.3"
