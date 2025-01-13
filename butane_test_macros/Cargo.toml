@@ -4,7 +4,7 @@ version.workspace = true
 authors = ["James Oakley <james@electronstudio.org>"]
 edition.workspace = true
 description = "Macros for Butane tests."
-publish = false
+publish = true
 license.workspace = true
 repository.workspace = true
 
