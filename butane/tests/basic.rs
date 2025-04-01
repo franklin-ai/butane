@@ -10,6 +10,7 @@ use chrono::{naive::NaiveDateTime, offset::Utc, DateTime};
 #[cfg(feature = "sqlite")]
 use rusqlite;
 use serde::Serialize;
+use std::ops::Deref;
 #[cfg(feature = "pg")]
 use tokio_postgres as postgres;
 
@@ -244,6 +245,7 @@ async fn auto_pk(conn: ConnectionAsync) {
     baz3.save(&conn).await.unwrap();
     assert!(baz1.id < baz2.id);
     assert!(baz2.id < baz3.id);
+    let _raw_pk: i64 = baz1.id.deref().unwrap();
 }
 
 #[butane_test]
@@ -463,4 +465,15 @@ async fn tokio_spawn(conn: ConnectionAsync) {
         let mut foo = Foo::new(1);
         foo.save(&conn).await.unwrap();
     });
+}
+
+#[model]
+struct TypeVariantsTest {
+    id: i64,
+    str1: String,
+    str2: std::string::String,
+    str3: ::std::string::String,
+    blob1: Vec<u8>,
+    blob2: std::vec::Vec<u8>,
+    blob3: ::std::vec::Vec<u8>,
 }
