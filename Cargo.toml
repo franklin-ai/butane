@@ -8,6 +8,7 @@ members = [
   "butane_test_helper",
   "butane_test_macros",
   "example",
+  "examples/custom_pg",
   "examples/newtype",
   "examples/getting_started",
   "examples/getting_started_async",
@@ -25,7 +26,7 @@ butane = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path 
 butane_cli = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_cli" }
 butane_core = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_core" }
 butane_codegen = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_codegen" }
-butane_test_helper = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_test_helper" }
+butane_test_helper = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_test_helper", default-features = false }
 butane_test_macros = { version = "0.7.0-franklin2", registry = "franklin-ai-rosalind", path = "butane_test_macros" }
 cfg-if = "^1.0"
 chrono = { version = "0.4.25", default-features = false, features = [

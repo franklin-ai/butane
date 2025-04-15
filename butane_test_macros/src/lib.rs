@@ -7,7 +7,7 @@ use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{ext::IdentExt, parse_macro_input, punctuated::Punctuated, Ident, ItemFn, Stmt, Token};
 
-/// Create a sqlite and postgres `#[test]` that each invoke `$fname` with a `Connection` with no schema.
+/// Create a SQLite and PostgreSQL `#[test]` that each invoke `$fname` with a `Connection` with no schema.
 #[proc_macro_attribute]
 pub fn butane_test(args: TokenStream, input: TokenStream) -> TokenStream {
     let input: TokenStream2 = input.into();
@@ -71,12 +71,14 @@ pub fn butane_test(args: TokenStream, input: TokenStream) -> TokenStream {
                     create_tag(sync="create_tag_sync"),
                 )
             )]
+            #[cfg(test)]
             #func_sync
         ));
     }
     if include_async {
         funcs.push(quote!(
             #[maybe_async_cfg::maybe(async())]
+            #[cfg(test)]
             #func_async
         ));
     }
